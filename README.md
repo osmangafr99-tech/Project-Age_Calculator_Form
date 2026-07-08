@@ -24,3 +24,19 @@ A professional desktop application built using **C#** and **Windows Forms**. It 
 ## 🏗️ Architecture Design & Code Structure
 
 The source code is structured following the **Separation of Concerns (SoC)** principle to ensure readability and maintainability:
+
+frmAgeCalculator (Form1)
+│
+├── 🛠️ Validations
+│   ├── IsBirthDateEmpty() ──> Ensures no input field is left blank
+│   ├── IsValidDate() ──> Verifies format (d/M/yyyy) and calendar existence
+│   └── IsValidBirthDate_limte() ──> Restricts future dates and years below 1900
+│
+├── 🧠 Core Logic
+│   ├── Calculate_Age() ──> Main calculation with realistic date borrowing logic
+│   ├── Calculate_TimeLived() ──> Converts total timespan to weeks, hours, seconds
+│   └── Calculate_MoreDetals() ──> Formulates next birthday countdown & leap year check
+│
+└── 🖥️ UI Management
+├── Print_Calculate_Age() / Print_Calculate_MoreDetals() ──> Renders outputs safely
+└── ClearAllTextBoxes() ──> Dynamic recursive container control clearing
