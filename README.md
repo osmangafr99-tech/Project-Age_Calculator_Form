@@ -21,22 +21,27 @@ A professional desktop application built using **C#** and **Windows Forms**. It 
 
 ---
 
-## 🏗️ Architecture Design & Code Structure
 
-The source code is structured following the **Separation of Concerns (SoC)** principle to ensure readability and maintainability:
 
-frmAgeCalculator (Form1)
-│
-├── 🛠️ Validations
-│   ├── IsBirthDateEmpty() ──> Ensures no input field is left blank
-│   ├── IsValidDate() ──> Verifies format (d/M/yyyy) and calendar existence
-│   └── IsValidBirthDate_limte() ──> Restricts future dates and years below 1900
-│
-├── 🧠 Core Logic
-│   ├── Calculate_Age() ──> Main calculation with realistic date borrowing logic
-│   ├── Calculate_TimeLived() ──> Converts total timespan to weeks, hours, seconds
-│   └── Calculate_MoreDetals() ──> Formulates next birthday countdown & leap year check
-│
-└── 🖥️ UI Management
-├── Print_Calculate_Age() / Print_Calculate_MoreDetals() ──> Renders outputs safely
-└── ClearAllTextBoxes() ──> Dynamic recursive container control clearing
+
+------------
+
+## 🛠️ Outstanding Technical Highlights
+
+### 1. Robust Validation via `DateTime.TryParseExact`
+Unlike standard `TryParse` which depends heavily on the client machine's local regional settings, this implementation forces a strict `"d/M/yyyy"` pattern combined with `CultureInfo.InvariantCulture`. This guarantees seamless execution across any global machine setup:
+
+```csharp
+private bool IsValidDate()
+{
+    Full_Date = masday.Text + "/" + masMonth.Text + "/" + masYear.Text;
+    DateTime validation_dateTime;
+    return DateTime.TryParseExact(Full_Date, "d/M/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out validation_dateTime);
+}
+
+------------
+2. Precise "Human-Like" Borrowing Logic
+When subtracting dates, days or months can frequently result in negative numbers (e.g., if today's day number is lower than your birthday). The code mimics actual human logic by decrementing the higher unit and pulling the accurate total days of that specific preceding month dynamically using DateTime.DaysInMonth:
+
+
+
