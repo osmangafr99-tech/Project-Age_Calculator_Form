@@ -25,3 +25,81 @@
 ## 🏗️ التصميم البرمجي وهندسة الكود (Architecture Design)
 
 تم بناء الكود بالاعتماد على تقسيم الوظائف (Separation of Concerns) لضمان سهولة القراءة والتطوير:
+frmAgeCalculator (Form1)
+│
+├── 🛠️ Validations (التحققات)
+│   ├── IsBirthDateEmpty() ──> التأكد من عدم ترك الحقول فارغة
+│   ├── IsValidDate() ──> فحص صحة التاريخ وصيغته (d/M/yyyy)
+│   └── IsValidBirthDate_limte() ──> منع تواريخ المستقبل أو ما قبل 1900
+│
+├── 🧠 Core Logic (العمليات الحسابية)
+│   ├── Calculate_Age() ──> حساب السن بالسنوات والشهور والأيام (مع الاستلاف)
+│   ├── Calculate_TimeLived() ──> حساب الإجمالي بالأسابيع، الأيام، الساعات، والثواني
+│   └── Calculate_MoreDetals() ──> حساب يوم الميلاد وعيد الميلاد القادم (معالجة كبيسة)
+│
+└── 🖥️ UI Management (إدارة الواجهة)
+├── Print_Calculate_Age() / Print_Calculate_MoreDetals() ──> عرض النتائج
+└── ClearAllTextBoxes() ──> تنظيف الأدوات بشكل ذكي وتكراري (Recursive)
+## 🛠️ تفاصيل تقنية متميزة في الكود الخاص بك
+
+### 1. نظام التحقق الصارم باستخدام `DateTime.TryParseExact`
+على عكس استخدام دالة `TryParse` العادية التي قد تتأثر بإعدادات لغة ثقافة جهاز العميل (Regional Settings)، يعتمد هذا المشروع على صيغة صارمة ومحددة وهي `"d/M/yyyy"` عبر الثقافة المحايدة `CultureInfo.InvariantCulture` لضمان استقرار العمل على أي جهاز:
+
+```csharp
+private bool IsValidDate()
+{
+    Full_Date = masday.Text + "/" + masMonth.Text + "/" + masYear.Text;
+    DateTime validation_dateTime;
+    return DateTime.TryParseExact(Full_Date, "d/M/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out validation_dateTime);
+}
+
+2. منطق الحساب البشري الفعلي وحالات الاستلاف (Borrowing Logic)
+يتميز الكود بحساب العمر تماماً كما يحسبه البشر؛ حيث يقوم بطرح الأيام والشهور والسنوات بشكل مباشر، وإذا كانت النتيجة سالبة (مثلاً يوم اليوم أقل من يوم الميلاد)، يقوم باستلاف عدد الأيام الفعلي للشهر السابق بدقة عبر DateTime.DaysInMonth:
+
+if (day_result < 0)
+{
+    Month_result--;
+    day_result += DateTime.DaysInMonth(currentDatetime.Year, currentDatetime.AddMonths(-1).Month);
+}
+if (Month_result < 0)
+{
+    year_result--;
+    Month_result += 12;
+}
+
+3. المعالجة الذكية ليوم 29 فبراير (Leap Year Handling)
+يتعامل البرنامج بذكاء شديد مع الأشخاص المولودين في يوم كبيس (29 فبراير). عند حساب عيد الميلاد القادم في سنة عادية (غير كبيرة)، يقوم الكود تلقائياً بتحويل اليوم إلى 28 فبراير لتفادي انهيار البرنامج (Crash) أو حدوث استثناء برمجى:
+
+
+if (month == 2 && day == 29 && !DateTime.IsLeapYear(NextBirthDay.Year))
+{
+    NextBirthDay = new DateTime(NextBirthDay.Year, 2, 28);
+}
+
+4. استخدام التابع التكراري الذكي للتنظيف (Recursive Controls Clear)
+بدلاً من كتابة سطر كود لكل تكست بوكس لمسح محتواه (والذي يعتبر أسلوباً غير مرن عند إضافة أدوات جديدة)، تم بناء ميثود تكرارية (Recursive Function) تمر على الواجهة وحاوياتها بالكامل وتمسح أي حقل نصي تلقائياً:
+private void ClearAllTextBoxes(Control container)
+{
+    foreach (Control control in container.Controls)
+    {
+        if (control is System.Windows.Forms.TextBox txt)
+        {
+            txt.Clear();
+        }
+        if (control.HasChildren)
+        {
+            ClearAllTextBoxes(control); // استدعاء ذاتي لتنظيف الحاويات الداخلية
+        }
+    }
+}
+💻 التقنيات المستخدمة (Tools & Tech Stack)
+اللغة: #C (C-Sharp)
+
+إطار العمل: .NET Framework
+
+نوع التطبيق: Windows Forms App (Desktop)
+
+بيئة التطوير: Visual Studio
+
+🌟 الخلاصة
+هذا الكود يمثل نموذجاً ممتازاً لتطبيق يراعي دقة البيانات المنطقية، ويحمي التطبيق من الانهيار باستخدام تحققات صارمة، مع الاستفادة من مفاهيم متقدمة مثل الـ Recursion للتحكم في عناصر الواجهة بسلاسة ورشاقة.
