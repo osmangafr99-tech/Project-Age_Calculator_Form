@@ -1,64 +1,205 @@
-# 🧮 High-Precision Age Calculator | Windows Forms
+# 🎂 Project 28 — Age Calculator Form
 
-A professional desktop application built using **C#** and **Windows Forms**. It calculates the user's exact age in years, months, and days with absolute precision. Additionally, it provides advanced statistics about the total time lived and a dynamic countdown to the next birthday, featuring smart leap year handling.
-
----
-
-## 📸 UI Preview
-
-![Age Calculator UI](image_399b9c.png)
+> Enter your birthday — get your age in years, months, and days, plus total time lived in every unit, the day of the week you were born on, and how many days until your next birthday.
 
 ---
 
-## 🚀 Core Features
+<img width="600" height="450" alt="image" src="https://github.com/user-attachments/assets/5a8f89ba-1179-4530-bf75-486da9f49af0" />
 
-* **Human-Like Exact Age Calculation:** Computes precise differences between dates in Years, Months, and Days based on the actual calendar (not just a rough mathematical division).
-* **Comprehensive "Time Lived" Statistics:** Automatically calculates your total lifespan broken down into Months, Weeks, Days, Hours, Minutes, and Seconds.
-* **Advanced "More Details" Panel:** * Identifies the exact day of the week you were born on (e.g., Sunday, Monday, etc.).
-  * Calculates an exact day-by-day countdown remaining until your next birthday.
-* **Strict Input Validation:** Features robust protection against empty fields, invalid calendar dates, future dates, or years prior to 1900.
-* **Smart UI Management (Recursive Clear):** Flushes all textboxes across different containers with a single click using a clean recursive approach.
 
 ---
 
+## 🚀 Project Overview
 
+Fourth project in the WinForms self-practice series.
 
+Same four controls. Different problem.
 
-------------
+This one takes a date and turns it into a full picture of how long you have been alive.
 
-## 🛠️ Outstanding Technical Highlights
+Three inputs: Day, Month, Year.
 
-### 1. Robust Validation via `DateTime.TryParseExact`
-Unlike standard `TryParse` which depends heavily on the client machine's local regional settings, this implementation forces a strict `"d/M/yyyy"` pattern combined with `CultureInfo.InvariantCulture`. This guarantees seamless execution across any global machine setup:
+One button.
+
+Results across four sections: your exact age, total time lived, day of birth, and next birthday countdown.
+
+---
+
+## 🏗️ Architecture Design
+
+```
+btnCalculateAge_Click
+ ├── ClearResults()               ← reset previous results before recalculating
+ └── ValidateBirthDate()
+      ├── IsBirthDateEmpty()     → ShowBirthDateEmptyMessage()
+      ├── IsValidDate()          → ShowDateInvalidMessage()
+      ├── IsValidBirthDate()     → ShowBirthDateInvalidMessage()
+      └── (valid) → CalculateAndFillResults()
+                    ├── CalculateResults()
+                    └── FillResults()
+                         ├── FillCalculatedAgeResults()
+                         ├── FillTimeLivedResults()
+                         └── FillMoreDetailsResults()
+                              └── CalculateAndFillNextBirthDay()
+
+btnClear_Click
+ ├── ClearAllTextboxes()
+ │    ├── ClearBirthDateTextboxes()
+ │    ├── ClearCalculatedAgeTextboxes()
+ │    ├── ClearTimeLivedTextboxes()
+ │    └── ClearMoreDetailsTextboxes()
+ └── ReturnFocusToDayTextbox()
+```
+
+---
+
+## ⚙️ Core Functionalities
+
+| Section | Output |
+|---|---|
+| **Your Age Is** | Years · Months · Days + full summary sentence |
+| **Time Lived** | Total Months · Weeks · Days · Hours · Minutes · Seconds |
+| **More Details** | Day of week born · Days until next birthday |
+
+---
+
+## 🧠 Design Decisions Worth Noting
+
+### Three-Layer Validation
+
+The date goes through three independent checks, each with its own specific error message:
 
 ```csharp
-private bool IsValidDate()
+// Layer 1 — is anything empty?
+if (IsBirthDateEmpty()) → "Birth Date Should not be Empty!"
+
+// Layer 2 — can it be parsed as a date?
+if (!IsValidDate()) → "Date is Not Valid!"
+
+// Layer 3 — is it a real birthdate?
+if (!IsValidBirthDate()) → "\"Birth\" Date is Not Valid!"
+```
+
+The third check enforces that the date is in the past and no earlier than 1900.
+
+Each error also calls `ClearBirthDateTextboxes()` and `ReturnFocusToDayTextbox()` — so the form resets to a clean state and the cursor goes right back to Day, ready for re-entry.
+
+---
+
+### ClearResults vs ClearAllTextboxes
+
+Two distinct clear strategies:
+
+```csharp
+private void ClearResults()         // clears only output TextBoxes
+private void ClearAllTextboxes()    // clears everything including inputs
+```
+
+`ClearResults()` is called at the START of every calculation.
+
+This ensures leftover values from a previous result never mix with a new one — even if validation fails mid-way.
+
+`ClearAllTextboxes()` is only used by the Clear button, which resets the entire form.
+
+---
+
+### Precise Total Months Calculation
+
+Total months is not approximated from days.
+
+It is calculated directly from the exact age:
+
+```csharp
+TotalMonths = (CalculatedAge_Years * 12) + CalculatedAge_Months;
+```
+
+The result is always accurate regardless of month length or leap years.
+
+---
+
+### Next Birthday Logic with Year Rollover
+
+The next birthday is calculated with a guard for the case where the birthday has already passed this year:
+
+```csharp
+DateTime NextBirthDate = new DateTime(DateTime.Now.Year, BirthDate.Month, BirthDate.Day);
+
+if (DateTime.Now >= NextBirthDate)
 {
-    Full_Date = masday.Text + "/" + masMonth.Text + "/" + masYear.Text;
-    DateTime validation_dateTime;
-    return DateTime.TryParseExact(Full_Date, "d/M/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out validation_dateTime);
+    NextBirthDate = NextBirthDate.AddYears(1);
 }
 
+txtNextBirthDay.Text = (NextBirthDate - DateTime.Now).Days.ToString();
+```
 
+If today is after the birthday this year, it moves to next year.
 
+Otherwise it stays in the current year.
 
-------------
-2. Precise "Human-Like" Borrowing Logic
-When subtracting dates, days or months can frequently result in negative numbers (e.g., if today's day number is lower than your birthday). The code mimics actual human logic by decrementing the higher unit and pulling the accurate total days of that specific preceding month dynamically using DateTime.DaysInMonth:
+---
 
-C#
+### Focus Management
 
+Every error path ends with:
 
-if (day_result < 0)
+```csharp
+private void ReturnFocusToDayTextbox()
 {
-    Month_result--;
-    day_result += DateTime.DaysInMonth(currentDatetime.Year, currentDatetime.AddMonths(-1).Month);
+    txtBirthDate_Day.Focus();
 }
-if (Month_result < 0)
-{
-    year_result--;
-    Month_result += 12;
-}
+```
 
+After any failed validation, the cursor goes straight back to Day.
 
+No extra click needed. The user can just type the correct date immediately.
 
+---
+
+## 🛠️ Tech Stack
+
+| | |
+|---|---|
+| **Language** | C# |
+| **Framework** | .NET Framework |
+| **UI** | Windows Forms (WinForms) |
+| **IDE** | Visual Studio |
+| **Type** | Desktop Application |
+| **Controls Used** | Form, Label, TextBox, Button |
+
+---
+
+## 📦 Practice Project Series
+
+| Project | Controls Practiced | Application |
+|---|---|---|
+| **Project 25 — Tax Calculator** | Form, Label, TextBox, Button | Tax computation + session history |
+| **Project 26 — Text Encryption** | Form, Label, TextBox, Button | Caesar Cipher encrypt/decrypt |
+| **Project 27 — Password Generator** | Form, Label, TextBox, Button | GUID + Key + Password generator |
+| **Project 28 — Age Calculator** *(you are here)* | Form, Label, TextBox, Button | Full age breakdown with time lived |
+| More projects | Next control groups | 🔄 |
+
+---
+
+## 🏁 Course & Milestone Context
+
+- ✅ Course 14 — C# Level 1 (Stage Two, in progress)
+- ✅ Fourth project in the WinForms self-practice series
+- ✅ Part of the **Programming Advices Roadmap** — Stage Two
+
+---
+
+## 🙏 Gratitude
+
+Thank you to:
+
+**[Programming Advices Platform](https://programmingadvices.com)**
+
+**[Dr. Mohammed Abu-Hadhoud](https://programmingadvices.com)**
+
+---
+
+## 🔥 What's Next
+
+Next control group.
+
+Next project.
