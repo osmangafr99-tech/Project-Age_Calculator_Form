@@ -1,4 +1,5 @@
-# 🎂 Project 28 — Age Calculator Form
+
+## 🚀 Project Overview
 
 > Enter your birthday — get your age in years, months, and days, plus total time lived in every unit, the day of the week you were born on, and how many days until your next birthday.
 
@@ -168,8 +169,3 @@ Thank you to:
 
 ---
 
-## 🔥 What's Next
-
-Next control group.
-
-Next project.
