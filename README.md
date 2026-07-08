@@ -1,42 +1,26 @@
-# 🧮 مشروع حساب العمر الدقيق | Age Calculator Form
+# 🧮 High-Precision Age Calculator | Windows Forms
 
-مشروع احترافي مبني باستخدام لغة **#C** وواجهات **Windows Forms**، يقوم بحساب عمر المستخدم بدقة متناهية بالسنوات، الشهور، والأيام، بالإضافة إلى تقديم تفاصيل متقدمة وشاملة عن الوقت الذي عاشه المستخدم وكذا موعد عيد ميلاده القادم مع معالجة ذكية للسنوات الكبيسة.
+A professional desktop application built using **C#** and **Windows Forms**. It calculates the user's exact age in years, months, and days with absolute precision. Additionally, it provides advanced statistics about the total time lived and a dynamic countdown to the next birthday, featuring smart leap year handling.
 
 ---
 
-## 📸 واجهة البرنامج (UI Preview)
+## 📸 UI Preview
 
 ![Age Calculator UI](image_399b9c.png)
 
 ---
 
-## 🚀 المميزات الرئيسية (Core Features)
+## 🚀 Core Features
 
-* **حساب العمر الدقيق برمجياً:** حساب الفروق الزمنية بالسنوات والشهور والأيام بناءً على التقويم الفعلي الدقيق (وليس مجرد تقسيم رياضي تقريبي).
-* **إحصائيات الوقت المستغرق (Time Lived):** حساب إجمالي الوقت الذي عشته بالدقائق، الساعات، الأيام، الأسابيع، والشهور.
-* **تفاصيل إضافية (More Details):**
-  * معرفة اليوم الذي ولددت فيه (مثل: Sunday, Monday... إلخ).
-  * عد تنازلي دقيق بالأيام للأيام المتبقية على عيد ميلادك القادم.
-* **نظام تحققات صارم (Strict Validation):** حماية البرنامج من المدخلات الخاطئة أو التواريخ الوهمية أو التواريخ المستقبلية.
-* **تنظيف ذكي وعود تكراري (Recursive Clear):** تفريغ جميع خانات النصوص بضغطة زر واحدة دون الحاجة لتسمية كل أداة على حدة.
+* **Human-Like Exact Age Calculation:** Computes precise differences between dates in Years, Months, and Days based on the actual calendar (not just a rough mathematical division).
+* **Comprehensive "Time Lived" Statistics:** Automatically calculates your total lifespan broken down into Months, Weeks, Days, Hours, Minutes, and Seconds.
+* **Advanced "More Details" Panel:** * Identifies the exact day of the week you were born on (e.g., Sunday, Monday, etc.).
+  * Calculates an exact day-by-day countdown remaining until your next birthday.
+* **Strict Input Validation:** Features robust protection against empty fields, invalid calendar dates, future dates, or years prior to 1900.
+* **Smart UI Management (Recursive Clear):** Flushes all textboxes across different containers with a single click using a clean recursive approach.
 
 ---
 
-## 🏗️ التصميم البرمجي وهندسة الكود (Architecture Design)
+## 🏗️ Architecture Design & Code Structure
 
-تم بناء الكود بالاعتماد على تقسيم الوظائف (Separation of Concerns) لضمان سهولة القراءة والتطوير:
-frmAgeCalculator (Form1)
-│
-├── 🛠️ Validations (التحققات)
-│   ├── IsBirthDateEmpty() ──> التأكد من عدم ترك الحقول فارغة
-│   ├── IsValidDate() ──> فحص صحة التاريخ وصيغته (d/M/yyyy)
-│   └── IsValidBirthDate_limte() ──> منع تواريخ المستقبل أو ما قبل 1900
-│
-├── 🧠 Core Logic (العمليات الحسابية)
-│   ├── Calculate_Age() ──> حساب السن بالسنوات والشهور والأيام (مع الاستلاف)
-│   ├── Calculate_TimeLived() ──> حساب الإجمالي بالأسابيع، الأيام، الساعات، والثواني
-│   └── Calculate_MoreDetals() ──> حساب يوم الميلاد وعيد الميلاد القادم (معالجة كبيسة)
-│
-└── 🖥️ UI Management (إدارة الواجهة)
-├── Print_Calculate_Age() / Print_Calculate_MoreDetals() ──> عرض النتائج
-└── ClearAllTextBoxes() ──> تنظيف الأدوات بشكل ذكي وتكراري (Recursive)
+The source code is structured following the **Separation of Concerns (SoC)** principle to ensure readability and maintainability:
