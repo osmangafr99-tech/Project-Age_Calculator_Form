@@ -26,12 +26,13 @@ Results across four sections: your exact age, total time lived, day of birth, an
 
 ## 🏗️ Architecture Design
 button1_Click
-├── validation_date()
-│    ├── IsBirthDateEmpty()     → WrongMessageBox1()
-│    ├── IsValidDate()          → WrongMessageBox2()
-│    └── IsValidBirthDate_limte() → WrongMessageBox3()
-└── (valid) → Calculate_Age()
-├── Print_Calculate_Age()
+└── validation_date()
+├── IsBirthDateEmpty() ──────> WrongMessageBox1()
+├── IsValidDate() ───────────> WrongMessageBox2()
+└── IsValidBirthDate_limte() ─> WrongMessageBox3()
+└── (if valid)
+├── Calculate_Age()
+│    └── Print_Calculate_Age()
 ├── Calculate_TimeLived()
 └── Calculate_MoreDetals()
 └── Print_Calculate_MoreDetals()
