@@ -24,19 +24,30 @@ Results across four sections: your exact age, total time lived, day of birth, an
 
 ---
 
-## 🏗️ Architecture Design
-button1_Click
-└── validation_date()
-├── IsBirthDateEmpty() ──────> WrongMessageBox1()
-├── IsValidDate() ───────────> WrongMessageBox2()
-└── IsValidBirthDate_limte() ─> WrongMessageBox3()
-└── (if valid)
-├── Calculate_Age()
-│    └── Print_Calculate_Age()
-├── Calculate_TimeLived()
-└── Calculate_MoreDetals()
-└── Print_Calculate_MoreDetals()
+---
 
-button2_Click (Clear Button)
-├── ClearAllTextBoxes(this)
-└── masday.Focus()
+## ⚙️ Core Functionalities
+
+| Section | Output |
+|---|---|
+| **Your Age Is** | Years · Months · Days + full summary sentence |
+| **Time Lived** | Total Months · Weeks · Days · Hours · Minutes · Seconds |
+| **More Details** | Day of week born · Days until next birthday |
+
+---
+
+## 🧠 Design Decisions Worth Noting
+
+### Three-Layer Strict Validation via `DateTime.TryParseExact`
+
+The input date travels through three clean independent checkpoints, enforcing a strict `"d/M/yyyy"` format rather than relying on global system locale settings:
+
+```csharp
+// Layer 1 — Is anything left blank?
+if (IsBirthDateEmpty()) → "من فضلك أدخل تاريخ الميلاد كاملاً."
+
+// Layer 2 — Does the layout form a logically existing calendar date?
+if (!IsValidDate()) → "التاريخ المدخل غير صحيح تأكد من الأيام والشهور"
+
+// Layer 3 — Is it in the future or realistic (>= 1900)?
+if (!IsValidBirthDate_limte()) → "لا يمكن أن يكون تاريخ الميلاد في المستقبل! او اقل سنة 1900"
