@@ -51,3 +51,7 @@ if (!IsValidDate()) → "التاريخ المدخل غير صحيح تأكد م
 
 // Layer 3 — Is it in the future or realistic (>= 1900)?
 if (!IsValidBirthDate_limte()) → "لا يمكن أن يكون تاريخ الميلاد في المستقبل! او اقل سنة 1900"
+
+
+Dynamic Human-Like Borrowing Logic
+When computing exact remaining days and months, simple mathematical division fails due to variance in calendar month lengths. The codebase solves this by adapting a realistic human borrowing approach using DateTime.DaysInMonth:
