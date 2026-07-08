@@ -43,5 +43,19 @@ private bool IsValidDate()
 2. Precise "Human-Like" Borrowing Logic
 When subtracting dates, days or months can frequently result in negative numbers (e.g., if today's day number is lower than your birthday). The code mimics actual human logic by decrementing the higher unit and pulling the accurate total days of that specific preceding month dynamically using DateTime.DaysInMonth:
 
+C#
+
+
+if (day_result < 0)
+{
+    Month_result--;
+    day_result += DateTime.DaysInMonth(currentDatetime.Year, currentDatetime.AddMonths(-1).Month);
+}
+if (Month_result < 0)
+{
+    year_result--;
+    Month_result += 12;
+}
+
 
 
