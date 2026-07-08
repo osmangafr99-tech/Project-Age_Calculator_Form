@@ -39,6 +39,9 @@ private bool IsValidDate()
     return DateTime.TryParseExact(Full_Date, "d/M/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out validation_dateTime);
 }
 
+
+
+
 ------------
 2. Precise "Human-Like" Borrowing Logic
 When subtracting dates, days or months can frequently result in negative numbers (e.g., if today's day number is lower than your birthday). The code mimics actual human logic by decrementing the higher unit and pulling the accurate total days of that specific preceding month dynamically using DateTime.DaysInMonth:
